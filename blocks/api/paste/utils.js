@@ -109,6 +109,29 @@ export function isEmpty( element ) {
 	} );
 }
 
+export function getPlain( HTML ) {
+	const doc = document.implementation.createHTMLDocument( '' );
+
+	doc.body.innerHTML = HTML;
+
+	const brs = doc.querySelectorAll( 'br' );
+
+	// Remove all BR nodes.
+	Array.from( brs ).forEach( ( node ) => {
+		node.parentNode.replaceChild( document.createTextNode( '\n' ), node );
+	} );
+
+	// Merge all text nodes.
+	doc.body.normalize();
+
+	// If it's plain text, there should only be one node left.
+	if ( doc.body.childNodes.length !== 1 ) {
+		return false;
+	}
+
+	return doc.body.firstChild.nodeValue;
+}
+
 function deepFilterHelper( nodeList, filters, doc ) {
 	Array.from( nodeList ).forEach( ( node ) => {
 		deepFilterHelper( node.childNodes, filters, doc );

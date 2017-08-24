@@ -18,7 +18,8 @@ import formattingTransformer from './formatting-transformer';
 import msListConverter from './ms-list-converter';
 import listMerger from './list-merger';
 import imageCorrector from './image-corrector';
-import { deepFilter, isInvalidInline, isNotWhitelisted } from './utils';
+import { deepFilter, isInvalidInline, isNotWhitelisted, getPlain } from './utils';
+import showdown from 'showdown';
 
 export default function( { content: HTML, inline } ) {
 	HTML = HTML.replace( /<meta[^>]+>/, '' );
@@ -28,10 +29,18 @@ export default function( { content: HTML, inline } ) {
 		return parseWithGrammar( HTML );
 	}
 
-	// Context dependent filters. Needs to run before we remove nodes.
-	HTML = deepFilter( HTML, [
-		msListConverter,
-	] );
+	const plain = getPlain( HTML );
+
+	if ( plain && ! isInlineContent( HTML ) ) {
+		const converter = new showdown.Converter();
+
+		HTML = converter.makeHtml( plain );
+	} else {
+		// Context dependent filters. Needs to run before we remove nodes.
+		HTML = deepFilter( HTML, [
+			msListConverter,
+		] );
+	}
 
 	HTML = deepFilter( HTML, [
 		listMerger,

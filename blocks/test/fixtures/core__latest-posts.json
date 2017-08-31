@@ -8,6 +8,7 @@
             "displayPostDate": false,
             "layout": "list",
             "columns": 3
-        }
+        },
+        "originalContent": ""
     }
 ]

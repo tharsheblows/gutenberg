@@ -35,9 +35,11 @@ class PostTaxonomies extends Component {
 
 	componentDidMount() {
 		this.fetchTaxonomies = new wp.api.collections.Taxonomies()
-			.fetch()
+			.fetch( { data: { context: 'edit' } } )
 			.done( ( taxonomies ) => {
-				this.setState( { taxonomies: Object.values( taxonomies ) } );
+				this.setState(
+					{ taxonomies: Object.values( taxonomies ).filter( taxonomy => taxonomy.public ) }
+				);
 			} );
 	}
 
@@ -88,4 +90,3 @@ export default connect(
 		},
 	}
 )( PostTaxonomies );
-
